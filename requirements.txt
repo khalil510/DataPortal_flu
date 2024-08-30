@@ -1,0 +1,9 @@
+django
+gunicorn
+pillow
+whitenoise
+dj_database_url
+psycopg2
+pandas
+pygwalker
+

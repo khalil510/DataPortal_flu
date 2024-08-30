@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container-fluid {
+            padding: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .back-button {
+            margin-bottom: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="text-center mb-4">Data Visualization</h1>
+        
+        <button class="back-button" onclick="window.location.href='http://127.0.0.1:8000/'">Back to Main Page</button>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                Select a Table to Visualize
+            </div>
+            <div class="card-body">
+                <form method="post" class="form-inline justify-content-center">
+                    {% csrf_token %}
+                    <div class="form-group mx-sm-3 mb-2">
+                        <label for="table" class="sr-only">Table:</label>
+                        <select id="table" name="table" class="form-control">
+                            {% for table in tables %}
+                                <option value="{{ table }}">{{ table }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Visualize</button>
+                </form>
+            </div>
+        </div>
+        
+        {% if table_name %}
+        <div class="card">
+            <div class="card-header">
+                Visualization for {{ table_name }}
+            </div>
+            <div class="card-body">
+                <div>{{ walker_html|safe }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,872 @@
+{% extends 'data_portal_app/base.html' %}
+{% load static %}
+
+{% block title %}Bird Flu Data Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Adjust styles for side-by-side layout */
+    .u-header {
+            width: 100%;
+            background-color: #f8f8f8; /* You can change the background color */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 10px 20px; /* Adjust padding as needed */
+        }
+
+        .u-clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .u-logo {
+            display: block;
+            margin: 0 auto; /* Centers the logo */
+            max-width: 100%; /* Ensures the logo doesn't overflow */
+            height: auto; /* Maintains aspect ratio */
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .u-header {
+                padding: 10px;
+            }
+
+            .u-logo {
+                width: 80%; /* Adjust width for smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .u-logo {
+                width: 100%; /* Logo takes up full width on very small screens */
+            }
+        }
+    .legend {
+        background: white;
+        padding: 5px;
+        line-height: 1.5;
+        color: #555;
+    }
+
+    .legend i {
+        width: 10px;
+        height: 10px;
+        float: left;
+        margin-right: 4px;
+        opacity: 0.7;
+    }
+  
+    /* Filter Button Styles */
+    .filter-button, .statistics-button, .kepler-button {
+        position: absolute;
+        top: 10px;
+        z-index: 1000;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+.map-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    .filter-button {
+        right: 20px;
+    }
+
+    .statistics-button {
+        left: 20px;
+    }
+
+    .kepler-button {
+    top: 3%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+    /* Filter Frame Styles */
+    .filter-frame {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+        height: 60%;
+        background-color: white;
+        border: 2px solid #007bff;
+        z-index: 1001;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: auto;
+        resize: both;
+    }
+
+    .filter-frame-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filter-frame-header h2 {
+        margin: 0;
+        font-size: 24px;
+        color: #007bff;
+    }
+
+    .close-button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    /* Center content */
+    .filter-frame form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .filter-frame form label {
+        font-size: 18px;
+        color: #333;
+        margin-top: 10px;
+    }
+
+    .filter-frame form input {
+        margin-bottom: 10px;
+        padding: 8px;
+        width: 80%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .filter-frame form button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    /* Summary Card Styles */
+    .summary-card {
+        background-color: #bdbdbd;
+        text-align: center;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin: 10px;
+        vertical-align: top;
+        max-width: 200px; /* Adjust the max-width to make the cards smaller */
+        flex: 1;
+    }
+
+    .summary-card h4 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0;
+    }
+
+    .containerflex {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 50px; /* Add margin to avoid overlap with buttons */
+    }
+
+    .leaflet-control-scale {
+        left: 50% !important; /* Center horizontally */
+        transform: translateX(-50%); /* Adjust for true center */
+        bottom: 0px; /* Adjust vertical position if needed */
+    }
+    .parent{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+ 
+
+    }
+
+    /* Overall table style */
+#datatable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    color: #111111;
+}
+
+/* Header styles */
+#datatable thead {
+    background-color: #526af1;
+    color: white;
+}
+
+#datatable th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid #dee2e6;
+    color: #fbfcfd;
+}
+
+#datatable th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Row styles */
+#datatable tbody tr:nth-child(even) {
+    background-color: #838385;
+}
+
+#datatable tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+#datatable tbody tr:hover {
+    background-color: #c5c9ce;
+    cursor: pointer;
+}
+
+/* Cell styles */
+#datatable td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #dee2e6;
+    
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #datatable thead {
+        display: none;
+    }
+
+    #datatable, #datatable tbody, #datatable tr, #datatable td {
+        display: block;
+        width: 100%;
+    }
+
+    #datatable tr {
+        margin-bottom: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    #datatable td {
+        display: block;
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    #datatable td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+        color: #333;
+        background-color: #cdcfca;
+        border-right: 1px solid #f1f5f8;
+    }
+    
+
+.page-container {
+  margin: 20px;
+}
+
+
+/* horizontal panel*/
+
+.panel-container {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid silver;
+  overflow: hidden;
+  
+  /* avoid browser level touch actions */
+  xtouch-action: none;
+}
+
+.panel-left {
+  flex: 0 0 auto;
+  /* only manually resize */
+  padding: 10px;
+  width: 300px;
+  min-height: 200px;
+  min-width: 150px;
+  white-space: nowrap;
+  background: #838383;
+  color: white;
+}
+
+.splitter {
+  flex: 0 0 auto;
+  width: 18px;  
+  background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
+  min-height: 200px;
+  cursor: col-resize;  
+}
+
+.panel-right {
+  flex: 1 1 auto;
+  /* resizable */
+  padding: 10px;
+  width: 100px;
+  min-height: 200px;
+  min-width: 200px;
+  background: #eee;
+}
+
+
+/* vertical panel */
+
+.panel-container-vertical {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  border: 1px solid silver;
+  overflow: hidden;
+}
+
+
+
+
+
+
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": "",
+    "logo": "images/black-logo-1.png"
+}</script>
+<meta name="theme-color" content="#3487d6">
+<meta property="og:title" content="Page 2">
+<meta property="og:type" content="website">
+<meta data-intl-tel-input-cdn-path="intlTelInput/"></head>
+<body data-home-page="Accueil.html" data-home-page-title="Accueil" data-path-to-root="./" data-include-products="false" class="u-body u-xl-mode" data-lang="fr">
+    
+    <button class="filter-button" onclick="toggleFilterFrame()">
+        <i class="fas fa-filter"></i>
+    </button>
+   
+
+    <div class="filter-frame" id="filter-frame">
+        <div class="filter-frame-header">
+            <h2>Filter Data</h2>
+            <button class="close-button" onclick="toggleFilterFrame()">Close</button>
+        </div>
+        <form id="filter-form">
+            <label for="country">Country:</label>
+            <input type="text" id="country" name="country"><br><br>
+            <label for="region">Region:</label>
+            <input type="text" id="region" name="region"><br><br>
+            <label for="start_date">Start Date Collected:</label>
+            <input type="date" id="start_date" name="start_date"><br><br>
+            <label for="end_date">End Date Collected:</label>
+            <input type="date" id="end_date" name="end_date"><br><br>
+            <label for="hpai_strain">HPAI Strain:</label>
+            <input type="text" id="hpai_strain" name="hpai_strain"><br><br>
+            <button type="button" onclick="applyFilter()">Apply Filter</button>
+        </form>
+    </div>
+    
+    <header class="u-box-shadow u-clearfix u-header u-header" id="sec-540f" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><nav class="u-menu u-menu-one-level u-offcanvas u-menu-1" data-responsive-from="XS">
+        
+        
+        <div class="menu-collapse u-custom-font u-font-arial" style="font-size: 1rem; letter-spacing: 0px;">
+          <a class="u-button-style u-custom-active-border-color u-custom-active-color u-custom-border u-custom-border-color u-custom-borders u-custom-color u-custom-hover-border-color u-custom-hover-color u-custom-left-right-menu-spacing u-custom-padding-bottom u-custom-text-active-color u-custom-text-color u-custom-text-decoration u-custom-text-hover-color u-custom-top-bottom-menu-spacing u-nav-link" href="#" style="padding: 4px 2px; font-size: calc(1em + 7.19531px);">
+            <svg class="u-svg-link" viewBox="0 0 24 24"><use xlink:href="#svg-506f"></use></svg>
+            <svg class="u-svg-content" version="1.1" id="svg-506f" viewBox="0 0 16 16" x="0px" y="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g><rect y="1" width="16" height="2"></rect><rect y="7" width="16" height="2"></rect><rect y="13" width="16" height="2"></rect>
+</g></svg>
+          </a>
+        </div>
+        <div class="u-custom-menu u-nav-container">
+          <ul class="u-custom-font u-font-arial u-nav u-spacing-30 u-unstyled u-nav-1">
+            <li class="u-nav-item">
+                <a class="u-border-3 u-border-active-palette-1-base u-border-black u-border-hover-custom-color-2 u-border-no-left u-border-no-right u-border-no-top u-button-style u-nav-link u-text-active-grey-90 u-text-grey-90 u-text-hover-grey-90" href="./#sec-01b8" style="padding: 11px 0px; border-style: solid;">
+                  <i class="fas fa-home"></i> Home
+                </a>
+              </li>
+              <li class="u-nav-item">
+                <a class="u-border-3 u-border-active-palette-1-base u-border-black u-border-hover-custom-color-2 u-border-no-left u-border-no-right u-border-no-top u-button-style u-nav-link u-text-active-grey-90 u-text-grey-90 u-text-hover-grey-90" href="./#sec-01b8" style="padding: 11px 0px; border-style: solid;">
+                  <i class="fas fa-map-marker-alt"></i> Map Data
+                </a>
+              </li>
+              <li class="u-nav-item">
+                <a class="u-border-3 u-border-active-palette-1-base u-border-black u-border-hover-custom-color-2 u-border-no-left u-border-no-right u-border-no-top u-button-style u-nav-link u-text-active-grey-90 u-text-grey-90 u-text-hover-grey-90" href="https://flu-data.onrender.com/static-html/" target="_blank" style="padding: 11px 0px; border-style: solid;">
+                    <i class="fas fa-dove"></i> Birds migration
+                </a>
+              </li>
+              <li class="u-nav-item">
+                <a class="u-border-3 u-border-active-palette-1-base u-border-black u-border-hover-custom-color-2 u-border-no-left u-border-no-right u-border-no-top u-button-style u-nav-link u-text-active-grey-90 u-text-grey-90 u-text-hover-grey-90" href="./#about" style="padding: 11px 0px; border-style: solid;">
+                  <i class="fas fa-info-circle"></i> About
+                </a>
+              </li>
+              <li class="u-nav-item">
+                <a class="u-border-3 u-border-active-palette-1-base u-border-black u-border-hover-custom-color-2 u-border-no-left u-border-no-right u-border-no-top u-button-style u-nav-link u-text-active-grey-90 u-text-grey-90 u-text-hover-grey-90" href="./#sec-01b8" style="padding: 11px 0px; border-style: solid;">
+                  <i class="fas fa-envelope"></i> Contact
+                </a>
+              </li>
+              
+              
+</li></ul>
+        </div>
+        <div class="u-custom-menu u-nav-container-collapse">
+          <div class="u-container-style u-inner-container-layout u-sidenav u-white">
+            <div class="u-inner-container-layout u-sidenav-overflow">
+              <div class="u-menu-close"></div>
+<ul class="u-align-center u-nav u-popupmenu-items u-unstyled u-nav-2"><li class="u-nav-item"><a class="u-button-style u-nav-link" href="./#sec-01b8">Accueil</a>
+</li><li class="u-nav-item"> <a class="u-button-style u-nav-link" href="./#sec-01b8">map Data</a>
+</li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="./#sec-01b8">Data flu</a>
+</li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="./#sec-01b8">À propos de</a>
+</li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="./#sec-01b8">Contact</a>
+</li></ul>
+            </div>
+          </div>
+          <div class="u-menu-overlay u-opacity u-opacity-70 u-white"></div>
+        </div>
+      </nav><a href="#" class="u-align-center-xs u-image u-logo u-image-1" data-image-width="371" data-image-height="334" data-animation-name="customAnimationIn" data-animation-duration="5000" data-animation-delay="0">
+        <img src="{% static 'nice/images/black-logo-11.png' %} " class="u-logo-image u-logo-image-1">
+      </a><h4 class="u-align-center-sm u-align-center-xs u-text u-text-palette-2-base u-text-1" data-animation-name="customAnimationIn" data-animation-duration="1000" data-animation-delay="1000">Multiverse AI</h4>
+    
+    
+    
+    </header>
+   
+  
+  <section class="u-align-center u-clearfix u-container-align-center u-grey-80 u-section-2"  style=" background-color: #ffffff; " id="sec-01b8">
+    <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+      <div class="custom-expanded u-layout-grid u-list u-list-1">
+        <div class="u-repeater u-repeater-1" >
+          <div class="u-align-center  u-container-align-center u-container-style u-list-item u-radius-32 u-repeater-item u-shape-round u-video-cover u-list-item-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="250">
+            <div class="u-container-layout u-similar-container u-valign-top u-container-layout-2" style="background-color: #2df12d; height:250px ">
+                <span class="u-align-center u-file-icon u-icon u-text-palette-2-base u-icon-4" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><img src=" {% static 'nice/images/reg.png' %} " alt=""></span>
+              <h4 class="u-align-center u-text u-text-3">Num° of regions </h4>
+       
+              <h3 id="num-regions"></h3>
+            </div>
+          </div>
+          <div class="u-align-center  u-container-align-center u-container-style  u-list-item u-radius-32 u-repeater-item u-shape-round u-list-item-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="250">
+            <div class="u-container-layout u-similar-container u-valign-top u-container-layout-1" style="background-color: #EB5B00; height: 250px;width:100px ">
+                <span class="u-align-center u-file-icon u-icon u-text-palette-2-base u-icon-4" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><img src=" {% static 'nice/images/coun.png' %} " alt=""></span>
+              <h4 class="u-align-center u-text u-text-1">Num° of countries</h4>
+          
+             
+              <h3 id="num-countries"></h3>
+            </div>
+          </div>
+          <div class="u-align-center  u-container-align-center u-container-style u-list-item u-radius-32 u-repeater-item u-shape-round u-video-cover u-list-item-3" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="250">
+            <div class="u-container-layout u-similar-container u-valign-top u-container-layout-3"  style="background-color: #f39e2f; width: 100px !important;  height: 250px ;">
+                
+                
+                <span class="u-align-center u-file-icon u-icon u-text-palette-2-base u-icon-4" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><img src=" {% static 'nice/images/flu.png' %} " alt=""></span>
+              <h4 class="u-align-center u-text u-text-5 " > Num° of Hpai strains</h4>
+           
+              <h3 id="num-hpai-strains"></h3>
+              
+            </div>
+          </div>
+          <div  class="u-align-center  u-container-align-center u-container-style u-list-item u-radius-32 u-repeater-item u-shape-round u-video-cover u-list-item-4" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="250" >
+            <div class="u-container-layout u-similar-container u-valign-top u-container-layout-4" style="background-color: #f33939; height: 250px ;width:100px " >
+                <span class="u-align-center u-file-icon u-icon u-text-palette-2-base u-icon-4" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><img src=" {% static 'nice/images/woah.png' %} " alt=""></span>
+              <h4 class="u-align-center u-text u-text-7"> Num° woah-classes  <br> 
+                
+              </h4>
+            
+              <h3 id="num-woah-classes" ></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+   
+
+
+<section class="u-align-center u-clearfix  "  >
+  
+
+          <div id="map" style=" background-color: #d3deeb; width:2200px; height:750px;"></div>
+    
+
+</section>
+
+<section class="u-align-center-lg u-align-center-md u-align-center-xl u-align-left-sm u-align-left-xs u-clearfix u-image u-section-3" id="carousel_23ba" data-image-width="2000" data-image-height="1333">
+  <div class="u-clearfix u-sheet u-sheet-1">
+    <div class="u-align-center u-container-align-center-lg u-container-align-center-xl u-container-style u-expanded-width-md u-expanded-width-sm u-expanded-width-xs u-group u-shape-rectangle u-group-1">
+      <div class="u-container-layout u-valign-middle-xs u-container-layout-1">
+        <img class="u-border-16 u-border-grey-60 u-image u-image-circle u-image-1" src="{% static 'nice/images/img.jpg' %} " alt="" data-image-width="540" data-image-height="360" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="250">
+      </div>
+    </div>
+    <div  id="about">
+    <div  class="custom-expanded u-align-center u-container-align-center u-container-style u-group u-shape-rectangle u-group-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" >
+      <div class="u-container-layout u-container-layout-2">
+        <h2 class="u-align-center u-text u-text-1" > Multiverse Ai<br>
+        </h2>
+        <p class="u-align-center u-text u-text-2">Multiverse AI is a polyvalent scientific platform dedicated to helping veterinarians and husbandry professionals in optimizing their workflows using AI solutions. It is also a virtual workspace where stakeholders and experts could interact with each other and share experiences while promoting best practices in both AgriHealth and AI ecosystems.</p>
+        <a href="https://imvers.com"  target="_blank" class="u-active-white u-align-center u-border-2 u-border-active-white u-border-hover-white u-border-white u-btn u-btn-round u-button-style u-hover-white u-none u-radius-50 u-btn-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500">More Info</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<section class="u-align-center u-clearfix  u-shading u-section-4" id="carousel_9304" >
+
+    <h1 class="u-text u-text-default u-text-1" >Birds Flu Data</h1>
+
+</section>
+
+
+
+
+
+  
+       <br>
+        <div >
+            <div id="datatable-container">
+                
+                <table id="datatable" class="display">
+                    <thead >
+                        <tr>
+                            <th><i class="fas fa-globe"></i> Country</th>
+                            <th><i class="fas fa-calendar-day"></i> Start Date Collected</th>
+                            <th><i class="fas fa-calendar-day"></i> End Date Collected</th>
+                            <th><i class="fas fa-map-marker-alt"></i> Region</th>
+                            <th><i class="fas fa-code"></i> ISO Code</th>
+                            <th><i class="fas fa-code"></i> Country Code</th>
+                            <th><i class="fas fa-location-arrow"></i> Latitude</th>
+                            <th><i class="fas fa-location-arrow"></i> Longitude</th>
+                            <th><i class="fas fa-virus"></i> HPAI Strain</th>
+                            <th><i class="fas fa-clipboard-list"></i> WOAH Classification</th>
+                            <th><i class="fas fa-plus-circle"></i> New Outbreaks</th>
+                            <th><i class="fas fa-chart-line"></i> Cumulative Outbreaks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in birdflu_data %}
+                        <tr data-lat="{{ data.latitude }}" data-lng="{{ data.longitude }}">
+                            <td>{{ data.country }}</td>
+                            <td>{{ data.start_date_collected }}</td>
+                            <td>{{ data.end_date_collected }}</td>
+                            <td>{{ data.region }}</td>
+                            <td>{{ data.iso_code }}</td>
+                            <td>{{ data.country_code }}</td>
+                            <td>{{ data.latitude }}</td>
+                            <td>{{ data.longitude }}</td>
+                            <td>{{ data.hpai_strain }}</td>
+                            <td>{{ data.woah_classification }}</td>
+                            <td>{{ data.new_outbreaks }}</td>
+                            <td>{{ data.cumulative_outbreaks }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+          <!--   <button class="filter-button" onclick="toggleFilterFrame()">Filter</button>
+            <button class="statistics-button" onclick="window.location.href='http://127.0.0.1:8000/data_visualization/'">Statistics</button>
+            -->
+        
+
+            <div class="filter-frame" id="filter-frame">
+                <div class="filter-frame-header">
+                    <h2>Filter Data</h2>
+                    <button class="close-button" onclick="toggleFilterFrame()">Close</button>
+                </div>
+                <form id="filter-form">
+                    <label for="country">Country:</label>
+                    <input type="text" id="country" name="country"><br><br>
+                    <label for="region">Region:</label>
+                    <input type="text" id="region" name="region"><br><br>
+                    <label for="start_date">Start Date Collected:</label>
+                    <input type="date" id="start_date" name="start_date"><br><br>
+                    <label for="end_date">End Date Collected:</label>
+                    <input type="date" id="end_date" name="end_date"><br><br>
+                    <label for="hpai_strain">HPAI Strain:</label>
+                    <input type="text" id="hpai_strain" name="hpai_strain"><br><br>
+                    <button type="button" onclick="applyFilter()">Apply Filter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<section class="u-backlink u-clearfix u-grey-80">
+    <footer>
+        <p>&copy; <span id="year"></span> Multiverse AI.  All rights reserved.</p>
+    </footer>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function adjustMapWidth() {
+      var bodyWidth = document.body.clientWidth;
+      var mapDiv = document.getElementById('map');
+      mapDiv.style.width = (bodyWidth ) + 'px';
+    }
+  
+    // Adjust width on page load and on window resize
+    window.addEventListener('load', adjustMapWidth);
+    window.addEventListener('resize', adjustMapWidth);
+  </script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+<script>
+    // Define tile layers
+    var osmTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+
+    var topoTileLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> contributors'
+    });
+
+    var darkTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
+    });
+
+    var map = L.map('map', {
+        center: [27, -4],
+        zoom: 3,
+        layers: [osmTileLayer]  // Default layer
+    });
+
+    // Add mouse position control to the map
+    L.control.mousePosition().addTo(map);
+
+    var baseMaps = {
+        "OpenStreetMap": osmTileLayer,
+        "Topo Map": topoTileLayer,
+        "Dark Map": darkTileLayer
+    };
+
+    var markers = L.markerClusterGroup();
+    var markerMap = {};  // Dictionary to store marker references by an identifier
+
+    // Fetch and display the data points
+    fetch("{% url 'data_records_geojson' %}")
+    .then(response => response.json())
+    .then(data => {
+        L.geoJSON(data, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties) {
+                    var popupContent = Object.keys(feature.properties).map(function (k) {
+                        return k + ": " + feature.properties[k];
+                    }).join("<br />");
+
+                    layer.bindPopup(popupContent, { maxHeight: 200 });
+
+                    // Store the marker reference in the markerMap dictionary
+                    var markerKey = feature.properties.latitude + ',' + feature.properties.longitude;
+                    markerMap[markerKey] = layer;
+                }
+            },
+            pointToLayer: function (feature, latlng) {
+                return markers.addLayer(L.marker(latlng));
+            }
+        });
+
+        map.addLayer(markers);
+    });
+
+    // Initialize choroplethLayer as null
+    var choroplethLayer = null;
+
+    // Fetch and display the GeoJSON boundaries with choropleth
+    fetch("{% url 'data_records_choropleth' %}")
+    .then(response => response.json())
+    .then(data => {
+        choroplethLayer = L.geoJSON(data, {
+            style: function (feature) {
+                var hpaiCount = feature.properties.hpai_count;
+                var fillColor = hpaiCount > 43 ? 'rgb(255,0,0)' :
+                                hpaiCount > 40 ? 'rgb(255,20,20)' :
+                                hpaiCount > 35 ? 'rgb(255,39,39)' :
+                                hpaiCount > 30 ? 'rgb(255,59,59)' :
+                                hpaiCount > 25 ? 'rgb(255,78,78)' :
+                                hpaiCount > 20 ? 'rgb(255,98,98)' :
+                                hpaiCount > 15 ? 'rgb(255,118,118)' :
+                                hpaiCount > 10 ? 'rgb(255,137,137)' :
+                                hpaiCount > 5  ? 'rgb(255,157,157)' :
+                                hpaiCount > 0  ? 'rgb(255,216,216)' :
+                                'rgb(0,255,0)';
+                return {
+                    fillColor: fillColor,
+                    weight: 2,
+                    opacity: 0.7,
+                    color: 'white',
+                    dashArray: '3',
+                    fillOpacity: 0.7
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                if (feature.properties) {
+                    layer.bindPopup('Country: ' + feature.properties.name + '<br>HPAI Count: ' + feature.properties.hpai_count);
+                }
+            }
+        }).addTo(map);
+
+        // Add layer control to switch between cluster and choropleth
+        var overlayMaps = {
+            "Clusters": markers,
+            "Choropleth": choroplethLayer
+        };
+
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+        // Create a legend and add it to the map
+        var legend = L.control({ position: 'bottomleft' });
+
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'legend');
+            var grades = [0, 5, 10, 15, 20, 25, 30, 35, 40, 43];
+            var labels = [];
+
+            div.innerHTML = '<h4> HPAI Strain Count</h4>';
+            for (var i = 0; i < grades.length; i++) {
+                div.innerHTML +=
+                    '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                    grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+            }
+
+            return div;
+        };
+
+        legend.addTo(map);
+
+        function getColor(d) {
+            return d > 43 ? 'rgb(255,0,0)' :
+                   d > 40 ? 'rgb(255,20,20)' :
+                   d > 35 ? 'rgb(255,39,39)' :
+                   d > 30 ? 'rgb(255,59,59)' :
+                   d > 25 ? 'rgb(255,78,78)' :
+                   d > 20 ? 'rgb(255,98,98)' :
+                   d > 15 ? 'rgb(255,118,118)' :
+                   d > 10 ? 'rgb(255,137,137)' :
+                   d > 5  ? 'rgb(255,157,157)' :
+                   d > 0  ? 'rgb(255,216,216)' :
+                   'rgb(0,255,0)';
+        }
+    });
+
+    // Initialize drawing control
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+        edit: {
+            featureGroup: drawnItems
+        }
+    });
+
+    map.addControl(drawControl);
+
+    // Initialize DataTable
+    $(document).ready(function() {
+        var table = $('#datatable').DataTable();
+
+        // Summarize data and update summary cards
+        var countries = new Set();
+        var regions = new Set();
+        var hpaiStrains = new Set();
+        var woahClasses = new Set();
+
+        table.rows().every(function() {
+            var data = this.data();
+            countries.add(data[0]);
+            regions.add(data[3]);
+            hpaiStrains.add(data[8]);
+            woahClasses.add(data[9]);
+        });
+
+        document.getElementById('num-countries').textContent = countries.size;
+        document.getElementById('num-regions').textContent = regions.size;
+        document.getElementById('num-hpai-strains').textContent = hpaiStrains.size;
+        document.getElementById('num-woah-classes').textContent = woahClasses.size;
+    });
+
+    // Function to toggle the filter frame visibility
+    function toggleFilterFrame() {
+        var frame = document.getElementById('filter-frame');
+        frame.style.display = (frame.style.display === 'none' || frame.style.display === '') ? 'block' : 'none';
+    }
+
+    // Function to apply the filter
+    function applyFilter() {
+        var country = document.getElementById('country').value.toLowerCase();
+        var region = document.getElementById('region').value.toLowerCase();
+        var startDate = document.getElementById('start_date').value;
+        var endDate = document.getElementById('end_date').value;
+        var hpaiStrain = document.getElementById('hpai_strain').value.toLowerCase();
+
+        var table = $('#datatable').DataTable();
+
+        table.rows().every(function() {
+            var data = this.data();
+            var match = true;
+
+            if (country && data[0].toLowerCase().indexOf(country) === -1) {
+                match = false;
+            }
+            if (region && data[3].toLowerCase().indexOf(region) === -1) {
+                match = false;
+            }
+            if (startDate && data[1] < startDate) {
+                match = false;
+            }
+            if (endDate && data[2] > endDate) {
+                match = false;
+            }
+            if (hpaiStrain && data[8].toLowerCase().indexOf(hpaiStrain) === -1) {
+                match = false;
+            }
+
+            if (match) {
+                $(this.node()).show();
+            } else {
+                $(this.node()).hide();
+            }
+        });
+
+        toggleFilterFrame(); // Close the filter frame after applying the filter
+    }
+</script>
+
+
+
+
+
+{% endblock %}

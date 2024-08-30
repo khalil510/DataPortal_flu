@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Choose Table</title>
+</head>
+<body>
+    <h1>Select a Table to Visualize</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="table">Table:</label>
+        <select id="table" name="table">
+            {% for table in tables %}
+                <option value="{{ table }}">{{ table }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Visualize</button>
+    </form>
+</body>
+</html>

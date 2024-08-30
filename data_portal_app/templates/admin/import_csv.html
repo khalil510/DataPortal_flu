@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}
+<style>
+    .module h2 {
+        margin: 0;
+        padding: 0;
+        font-size: 1.5em;
+    }
+    .submit-row input[type=submit] {
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>{{ title }}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            {{ form.as_p }}
+        </fieldset>
+        <div class="submit-row">
+            <input type="submit" value="Import CSV" class="default" name="_save" />
+        </div>
+    </form>
+</div>
+{% endblock %}
