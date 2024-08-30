@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-linxzfkw__92e(r!myij78#-*01(ej1c1xr^^d-1=6r07cvw(#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['flu-data.onrender.com',"127.0.0.1"]
+ALLOWED_HOSTS = ['flu-data.onrender.com',"127.0.0.1","dataportal-flu.onrender.com"]
 
 
 # Application definition
