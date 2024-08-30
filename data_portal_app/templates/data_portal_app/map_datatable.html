@@ -70,11 +70,7 @@
         border-radius: 5px;
         font-size: 16px;
     }
-.map-container{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+
     .filter-button {
         right: 20px;
     }
@@ -195,167 +191,68 @@
         transform: translateX(-50%); /* Adjust for true center */
         bottom: 0px; /* Adjust vertical position if needed */
     }
-    .parent{
+    .panel-container {
         display: flex;
-        align-items: center;
-        flex-direction: column;
- 
-
-    }
-
-    /* Overall table style */
-#datatable {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-family: Arial, sans-serif;
-    color: #111111;
-}
-
-/* Header styles */
-#datatable thead {
-    background-color: #526af1;
-    color: white;
-}
-
-#datatable th {
-    padding: 12px 15px;
-    text-align: left;
-    font-weight: bold;
-    border-bottom: 2px solid #dee2e6;
-    color: #fbfcfd;
-}
-
-#datatable th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
-
-/* Row styles */
-#datatable tbody tr:nth-child(even) {
-    background-color: #838385;
-}
-
-#datatable tbody tr:nth-child(odd) {
-    background-color: #ffffff;
-}
-
-#datatable tbody tr:hover {
-    background-color: #c5c9ce;
-    cursor: pointer;
-}
-
-/* Cell styles */
-#datatable td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #dee2e6;
-    
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    #datatable thead {
-        display: none;
-    }
-
-    #datatable, #datatable tbody, #datatable tr, #datatable td {
-        display: block;
-        width: 100%;
-    }
-
-    #datatable tr {
-        margin-bottom: 10px;
-        border: 1px solid #dee2e6;
-        border-radius: 5px;
+        flex-direction: row;
+        height: 100vh; /* Full height */
+        width: 100%; /* Full width */
         overflow: hidden;
     }
 
+    .panel-left {
+        background-color: #d3deeb; /* Background for the map */
+        width: 50%; /* Default to 50% width */
+      
+        overflow: hidden; /* Ensure the content doesn't overflow */
+    }
+
+    .splitter {
+        flex: 0 0 10px;
+        background: url('https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png') center center no-repeat;
+        cursor: col-resize;
+        background-color: #535353;
+    }
+
+    .panel-right {
+        background-color: #f0f0f0; /* Background for the table */
+        width: 50%; /* Default to 50% width */
+       
+        overflow-y: auto;
+    }
+
+    /* DataTable styles */
+    #datatable {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-family: Arial, sans-serif;
+        color: #111111;
+    }
+
+    #datatable thead {
+        background-color: #526af1;
+        color: white;
+    }
+
+    #datatable th,
     #datatable td {
-        display: block;
-        text-align: right;
-        padding-left: 50%;
-        position: relative;
+        padding: 12px 15px;
+        border-bottom: 1px solid #dee2e6;
     }
 
-    #datatable td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0;
-        width: 50%;
-        padding-left: 15px;
-        font-weight: bold;
-        text-align: left;
-        color: #333;
-        background-color: #cdcfca;
-        border-right: 1px solid #f1f5f8;
+    #datatable tbody tr:nth-child(even) {
+        background-color: #838385;
     }
-    
 
-.page-container {
-  margin: 20px;
-}
+    #datatable tbody tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
 
+    #datatable tbody tr:hover {
+        background-color: #c5c9ce;
+        cursor: pointer;
+    }
 
-/* horizontal panel*/
-
-.panel-container {
-  display: flex;
-  flex-direction: row;
-  border: 1px solid silver;
-  overflow: hidden;
-  
-  /* avoid browser level touch actions */
-  xtouch-action: none;
-}
-
-.panel-left {
-  flex: 0 0 auto;
-  /* only manually resize */
-  padding: 10px;
-  width: 300px;
-  min-height: 200px;
-  min-width: 150px;
-  white-space: nowrap;
-  background: #838383;
-  color: white;
-}
-
-.splitter {
-  flex: 0 0 auto;
-  width: 18px;  
-  background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
-  min-height: 200px;
-  cursor: col-resize;  
-}
-
-.panel-right {
-  flex: 1 1 auto;
-  /* resizable */
-  padding: 10px;
-  width: 100px;
-  min-height: 200px;
-  min-width: 200px;
-  background: #eee;
-}
-
-
-/* vertical panel */
-
-.panel-container-vertical {
-  display: flex;
-  flex-direction: column;
-  height: 500px;
-  border: 1px solid silver;
-  overflow: hidden;
-}
-
-
-
-
-
-
-}
 
 </style>
 {% endblock %}
@@ -512,50 +409,16 @@
    
 
 
-<section class="u-align-center u-clearfix  "  >
-  
-
-          <div id="map" style=" background-color: #d3deeb; width:2200px; height:750px;"></div>
-    
-
-</section>
-
-<section class="u-align-center-lg u-align-center-md u-align-center-xl u-align-left-sm u-align-left-xs u-clearfix u-image u-section-3" id="carousel_23ba" data-image-width="2000" data-image-height="1333">
-  <div class="u-clearfix u-sheet u-sheet-1">
-    <div class="u-align-center u-container-align-center-lg u-container-align-center-xl u-container-style u-expanded-width-md u-expanded-width-sm u-expanded-width-xs u-group u-shape-rectangle u-group-1">
-      <div class="u-container-layout u-valign-middle-xs u-container-layout-1">
-        <img class="u-border-16 u-border-grey-60 u-image u-image-circle u-image-1" src="{% static 'nice/images/img.jpg' %} " alt="" data-image-width="540" data-image-height="360" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="250">
-      </div>
-    </div>
-    <div  id="about">
-    <div  class="custom-expanded u-align-center u-container-align-center u-container-style u-group u-shape-rectangle u-group-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" >
-      <div class="u-container-layout u-container-layout-2">
-        <h2 class="u-align-center u-text u-text-1" > Multiverse Ai<br>
-        </h2>
-        <p class="u-align-center u-text u-text-2">Multiverse AI is a polyvalent scientific platform dedicated to helping veterinarians and husbandry professionals in optimizing their workflows using AI solutions. It is also a virtual workspace where stakeholders and experts could interact with each other and share experiences while promoting best practices in both AgriHealth and AI ecosystems.</p>
-        <a href="https://imvers.com"  target="_blank" class="u-active-white u-align-center u-border-2 u-border-active-white u-border-hover-white u-border-white u-btn u-btn-round u-button-style u-hover-white u-none u-radius-50 u-btn-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500">More Info</a>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-<section class="u-align-center u-clearfix  u-shading u-section-4" id="carousel_9304" >
-
-    <h1 class="u-text u-text-default u-text-1" >Birds Flu Data</h1>
-
-</section>
-
-
-
-
-
-  
-       <br>
-        <div >
+  <section class="u-align-center u-clearfix">
+    <div class="panel-container">
+        <div class="panel-left">
+            <div id="map" style="height: 100%; width:100%;"></div>
+        </div>
+        <div class="splitter"></div>
+        <div class="panel-right">
             <div id="datatable-container">
-                
                 <table id="datatable" class="display">
-                    <thead >
+                    <thead>
                         <tr>
                             <th><i class="fas fa-globe"></i> Country</th>
                             <th><i class="fas fa-calendar-day"></i> Start Date Collected</th>
@@ -591,7 +454,43 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+</section>
 
+<section class="u-align-center-lg u-align-center-md u-align-center-xl u-align-left-sm u-align-left-xs u-clearfix u-image u-section-3" id="carousel_23ba" data-image-width="2000" data-image-height="1333">
+  <div class="u-clearfix u-sheet u-sheet-1">
+    <div class="u-align-center u-container-align-center-lg u-container-align-center-xl u-container-style u-expanded-width-md u-expanded-width-sm u-expanded-width-xs u-group u-shape-rectangle u-group-1">
+      <div class="u-container-layout u-valign-middle-xs u-container-layout-1">
+        <img class="u-border-16 u-border-grey-60 u-image u-image-circle u-image-1" src="{% static 'nice/images/img.jpg' %} " alt="" data-image-width="540" data-image-height="360" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="250">
+      </div>
+    </div>
+    <div  id="about">
+    <div  class="custom-expanded u-align-center u-container-align-center u-container-style u-group u-shape-rectangle u-group-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" >
+      <div class="u-container-layout u-container-layout-2">
+        <h2 class="u-align-center u-text u-text-1" > Multiverse Ai<br>
+        </h2>
+        <p class="u-align-center u-text u-text-2">Multiverse AI is a polyvalent scientific platform dedicated to helping veterinarians and husbandry professionals in optimizing their workflows using AI solutions. It is also a virtual workspace where stakeholders and experts could interact with each other and share experiences while promoting best practices in both AgriHealth and AI ecosystems.</p>
+        <a href="https://imvers.com"  target="_blank" class="u-active-white u-align-center u-border-2 u-border-active-white u-border-hover-white u-border-white u-btn u-btn-round u-button-style u-hover-white u-none u-radius-50 u-btn-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500">More Info</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<section class="u-align-center u-clearfix  u-shading u-section-4" id="carousel_9304" >
+
+    <h1 class="u-text u-text-default u-text-1" >Birds Flu Data</h1>
+
+</section>
+
+
+
+
+
+  
+       <br>
+        <div >
+        
           <!--   <button class="filter-button" onclick="toggleFilterFrame()">Filter</button>
             <button class="statistics-button" onclick="window.location.href='http://127.0.0.1:8000/data_visualization/'">Statistics</button>
             -->
@@ -865,7 +764,65 @@
     }
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const splitter = document.querySelector('.splitter');
+        const leftPanel = document.querySelector('.panel-left');
+        const rightPanel = document.querySelector('.panel-right');
 
+        let isResizing = false;
+
+        splitter.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            document.body.classList.add('resizing');
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isResizing) return;
+
+            let offsetRight = document.body.offsetWidth - (e.clientX - document.body.offsetLeft);
+            leftPanel.style.width = `calc(100% - ${offsetRight}px - 10px)`;
+            rightPanel.style.width = `${offsetRight}px`;
+
+            // Trigger a resize event to the map
+            map.invalidateSize();
+        });
+
+        document.addEventListener('mouseup', function(e) {
+            isResizing = false;
+            document.body.classList.remove('resizing');
+        });
+    });
+
+    // Initialize Leaflet Map
+    var map = L.map('map', {
+        center: [27, -4],
+        zoom: 3,
+        layers: [L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        })]
+    });
+
+    // Fetch and display the data points
+    fetch("{% url 'data_records_geojson' %}")
+    .then(response => response.json())
+    .then(data => {
+        L.geoJSON(data, {
+            onEachFeature: function (feature, layer) {
+                var popupContent = Object.keys(feature.properties).map(function (k) {
+                    return k + ": " + feature.properties[k];
+                }).join("<br />");
+
+                layer.bindPopup(popupContent, { maxHeight: 200 });
+            }
+        }).addTo(map);
+    });
+
+    // Initialize DataTable
+    $(document).ready(function() {
+        $('#datatable').DataTable();
+    });
+</script>
 
 
 
