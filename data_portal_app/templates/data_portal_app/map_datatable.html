@@ -196,14 +196,14 @@
         flex-direction: row;
         height: 100vh; /* Full height */
         width: 100%; /* Full width */
-        overflow: hidden;
+    
     }
 
     .panel-left {
         background-color: #d3deeb; /* Background for the map */
-        width: 50%; /* Default to 50% width */
+        width: 70%; /* Default to 50% width */
+        z-index: 0;
       
-        overflow: hidden; /* Ensure the content doesn't overflow */
     }
 
     .splitter {
@@ -211,13 +211,15 @@
         background: url('https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png') center center no-repeat;
         cursor: col-resize;
         background-color: #535353;
+        z-index: 50;
     }
 
     .panel-right {
         background-color: #f0f0f0; /* Background for the table */
         width: 50%; /* Default to 50% width */
-       
-        overflow-y: auto;
+        z-index: 0;
+        user-select: none;
+      
     }
 
     /* DataTable styles */
@@ -252,7 +254,9 @@
         background-color: #c5c9ce;
         cursor: pointer;
     }
-
+    #map{
+        height: 100%; width:100% !important; 
+    }
 
 </style>
 {% endblock %}
@@ -412,7 +416,7 @@
   <section class="u-align-center u-clearfix">
     <div class="panel-container">
         <div class="panel-left">
-            <div id="map" style="height: 100%; width:100%;"></div>
+            <div id="map" ></div>
         </div>
         <div class="splitter"></div>
         <div class="panel-right">
